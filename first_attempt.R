@@ -11,3 +11,9 @@ Ebird_snowy_owl_Canada
   #Lower lat of exclusive breeding
   above_68 <- Ebird_snowy_owl_Canada %>% 
    filter(LATITUDE > 68)
+  
+  #checking how many observations have Duration (effort data)
+    with_time_data<- Ebird_snowy_owl_Canada[!(is.na(Ebird_snowy_owl_Canada$DURATION.MINUTES)), ]
+  #checking how many observations have distance data (more effort data)
+    with_distance_data<- Ebird_snowy_owl_Canada[!(is.na(Ebird_snowy_owl_Canada$EFFORT.DISTANCE.KM)), ]
+  #checking how many observations have both
