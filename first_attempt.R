@@ -1,5 +1,7 @@
 library(tidyverse)
 
+####### fucking around with data
+
 #the ebird data that I pre-filtered only Canadian observations (to get file size down)
 Ebird_snowy_owl_Canada
 
@@ -17,3 +19,18 @@ Ebird_snowy_owl_Canada
   #checking how many observations have distance data (more effort data)
     with_distance_data<- Ebird_snowy_owl_Canada[!(is.na(Ebird_snowy_owl_Canada$EFFORT.DISTANCE.KM)), ]
   #checking how many observations have both
+
+    
+    
+    
+   
+  ######### calculating abundance from ebird data
+    
+   
+    
+    
+ ########### Aggergating Weather Data
+    
+    
+    
+    
