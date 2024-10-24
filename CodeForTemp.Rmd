@@ -1,0 +1,255 @@
+#Link for data
+#https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Gridded/Complete_TAVG_LatLong1.nc
+
+
+#load libraries
+```{r}
+library(ncdf4)
+library(ggplot2)
+library(dplyr)
+```
+
+
+#This chunk is used to get the first set of anomaly data
+#Adjust Lat_indices and Lon_indices to set grid 
+#Adjust years_indices to adjust for years, second value should be final year +1
+#Change path to where file is on local computer(to big for git)
+```{r}
+# Open the NetCDF file
+nc_file <- nc_open("C:\\Users\\wille\\Documents\\Pretorius_Willem\\Group-6-Owl-Migration\\Complete_TAVG_LatLong1.nc")
+
+# Extract latitude, longitude, time, and temperature data
+lon <- ncvar_get(nc_file, "longitude")
+lat <- ncvar_get(nc_file, "latitude")
+time <- ncvar_get(nc_file, "time")
+temperature_data <- ncvar_get(nc_file, "temperature")
+
+# Close the NetCDF file
+nc_close(nc_file)
+
+# Replace NaN values with NA
+temperature_data[is.nan(temperature_data)] <- NA
+
+# Get indices for the desired latitude and longitude ranges
+lat_indices <- which(lat >= 30 & lat <= 50)
+lon_indices <- which(lon >= -130 & lon <= -60)
+
+# Subset the temperature data for these indices
+subset_temp <- temperature_data[lon_indices, lat_indices, ]
+
+# Verify that time is in years and use as is
+years <- time
+
+# Extract years 
+years_indices <- which(years >= 2000 & years <= 2021)
+print(length(years_indices))  # Check the length of years_indices
+
+# Subset temperature data for these years
+subset_temp_years <- subset_temp[,,years_indices]
+print(dim(subset_temp_years))  # Verify the dimensions of the subset data
+
+# Ensure correct number of years
+num_years <- length(years_indices)
+
+# Initialize the array to store monthly data
+monthly_data <- array(NA, dim = c(length(lon_indices), length(lat_indices), num_years, 12))
+
+# Fill the array with subset_temp data
+for (year in 1:num_years) {
+  for (month in 1:12) {
+    month_index <- (year - 1) * 12 + month
+    if (month_index <= dim(subset_temp_years)[3]) {
+      monthly_data[,,year,month] <- subset_temp_years[,,month_index]
+    }
+  }
+}
+
+# Calculate the mean temperature for each month over all years
+mean_monthly_temp <- apply(monthly_data, c(3, 4), mean, na.rm = TRUE)
+
+# Flatten the array and create a data frame
+mean_monthly_temp_flattened <- as.vector(t(mean_monthly_temp))
+months <- rep(1:12, num_years)
+years <- rep(2000:(2000 + num_years - 1), each = 12)
+
+# Check lengths
+print(length(mean_monthly_temp_flattened))
+print(length(months))
+print(length(years))
+
+# Create a data frame with months and mean temperatures
+monthly_temp_df <- data.frame(Year = years, Month = months, Temperature = mean_monthly_temp_flattened)
+
+```
+#This chunk is used to get the baseline data (1951 to 1980) from this data set
+#Adjust la_indices and lon_indices to desired gridsize
+```{r}
+# Open the NetCDF file
+nc_file <- nc_open("C:\\Users\\wille\\Documents\\Pretorius_Willem\\Group-6-Owl-Migration\\Complete_TAVG_LatLong1.nc")
+
+# Extract latitude, longitude, and climatology data
+lon <- ncvar_get(nc_file, "longitude")
+lat <- ncvar_get(nc_file, "latitude")
+climatology_data <- ncvar_get(nc_file, "climatology")
+
+# Close the NetCDF file
+nc_close(nc_file)
+
+# Replace NaN values with NA
+climatology_data[is.nan(climatology_data)] <- NA
+
+# Get indices for the desired latitude and longitude ranges
+lat_indices <- which(lat >= 30 & lat <= 50)
+lon_indices <- which(lon >= -130 & lon <= -60)
+
+# Subset the climatology data for these indices
+subset_climatology <- climatology_data[lon_indices, lat_indices, ]
+
+# Verify the dimensions and check for NaNs
+print(dim(subset_climatology))
+print(summary(as.vector(subset_climatology)))
+      
+
+# Calculate mean climatology temperature for each month
+climatology_monthly_data <- array(NA, dim = c(length(lon_indices), length(lat_indices), 12))
+for (month in 1:12) {
+  climatology_monthly_data[,,month] <- apply(subset_climatology[,,month], c(1, 2), mean, na.rm = TRUE)
+}
+
+# Flatten the array and create a data frame for each month
+mean_climatology_temp_flattened <- as.vector(climatology_monthly_data)
+months <- rep(1:12, each = length(lon_indices) * length(lat_indices))
+
+# Create a data frame with months and mean climatology temperatures
+climatology_temp_df <- data.frame(
+  Month = months,
+  ClimatologyTemperature = mean_climatology_temp_flattened
+)
+
+# Remove NaN values if necessary
+climatology_temp_df <- climatology_temp_df[!is.nan(climatology_temp_df$ClimatologyTemperature), ]
+
+# Verify data
+summary(climatology_temp_df)
+```
+
+#This is just to visualize the basline tempratures 
+```{r}
+# Use ggplot2 to create a plot
+ggplot(climatology_temp_df, aes(x = factor(Month), y = ClimatologyTemperature, fill = ClimatologyTemperature)) +
+  geom_boxplot() +
+  labs(title = "Monthly Climatology Temperature (1951-1980)",
+       x = "Month",
+       y = "Temperature (°C)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+#Averging the baseline data into a dataframe
+```{r}
+# Calculate mean climatology temperature for each month
+climatology_monthly_means <- apply(subset_climatology, 3, mean, na.rm = TRUE)
+
+# Create a data frame for the monthly averages
+average_climatology_temp_df <- data.frame(
+  Month = 1:12,
+  AverageTemperature = climatology_monthly_means
+)
+
+# Verify values
+print(average_climatology_temp_df)
+```
+#Merged the Anomoly and baseline data
+#Also cleasn the data
+#In cleaned_df adjust year to last year in range
+```{r}
+# Merge the monthly temperature data frame with the average climatology temperature data frame
+merged_df <- monthly_temp_df %>%
+  left_join(average_climatology_temp_df, by = "Month")
+
+# Verify the merged data frame
+print(head(merged_df))
+
+# Sum the Temperature and AverageTemperature columns to get AbsoluteTemperature
+merged_df <- merged_df %>%
+  mutate(AbsoluteTemperature = Temperature + AverageTemperature)
+
+# Filter out rows where Year is greater than 2020
+cleaned_df <- merged_df %>%
+  filter(Year <= 2020)
+```
+
+#Create a plot from data to visualize trends
+#Adjust plot_custom_months for specific months
+```{r}
+# Function to create plot for specified months
+plot_custom_months <- function(months) {
+  # Filter dataframe for specified months
+  filtered_df <- cleaned_df %>% 
+    filter(Month %in% months)
+  
+  # Create plot
+  ggplot(filtered_df, aes(x = Year, y = AbsoluteTemperature, color = factor(Month))) +
+    geom_line() +
+    geom_smooth(method = "lm", se = FALSE, aes(group = Month, color = factor(Month)), linetype = "dashed") +
+    labs(title = "Absolute Temperature for Selected Months",
+         x = "Year",
+         y = "Absolute Temperature (°C)",
+         color = "Month") +
+    theme_minimal()
+}
+
+# pick months
+plot_custom_months(c(2, 4, 5))
+```
+
+#Slope and summary for speciefied months
+#Adjust month ranges as desired
+```{r}
+# Function to calculate slopes for specified months
+calculate_slopes <- function(months) {
+  slopes <- cleaned_df %>%
+    filter(Month %in% months) %>%
+    group_by(Month) %>%
+    summarize(slope = coef(lm(AbsoluteTemperature ~ Year))[2])
+  
+  return(slopes)
+}
+
+# Calculate slopes 
+slopes <- calculate_slopes(c(1: 12))
+print(slopes)
+
+# Function to generate summary statistics for specified months
+generate_monthly_summary <- function(months) {
+  summary_df <- cleaned_df %>%
+    filter(Month %in% months) %>%
+    group_by(Month) %>%
+    summarize(
+      Min = min(AbsoluteTemperature, na.rm = TRUE),
+      FirstQuartile = quantile(AbsoluteTemperature, 0.25, na.rm = TRUE),
+      Median = median(AbsoluteTemperature, na.rm = TRUE),
+      Mean = mean(AbsoluteTemperature, na.rm = TRUE),
+      ThirdQuartile = quantile(AbsoluteTemperature, 0.75, na.rm = TRUE),
+      Max = max(AbsoluteTemperature, na.rm = TRUE),
+      StdDev = sd(AbsoluteTemperature, na.rm = TRUE)
+    )
+  
+  return(summary_df)
+}
+
+# Generate summary
+monthly_summary <- generate_monthly_summary(1 : 12)
+print(monthly_summary)
+```
+
+#Save it as a csv
+```{r}
+# Select only the Year, Month, and AbsoluteTemperature columns
+export_df <- cleaned_df %>%
+  select(Year, Month, AbsoluteTemperature)
+
+# Save the selected columns to a CSV file
+write.csv(export_df, "Absolute_temperature.csv", row.names = FALSE)
+```
+
