@@ -200,7 +200,7 @@ plot_custom_months <- function(months) {
 }
 
 # pick months
-plot_custom_months(c(2, 4, 5))
+plot_custom_months(c(2, 3, 4))
 ```
 
 #Slope and summary for speciefied months
@@ -248,6 +248,8 @@ print(monthly_summary)
 # Select only the Year, Month, and AbsoluteTemperature columns
 export_df <- cleaned_df %>%
   select(Year, Month, AbsoluteTemperature)
+```
+```{r}
 
 # Save the selected columns to a CSV file
 write.csv(export_df, "Absolute_temperature.csv", row.names = FALSE)
