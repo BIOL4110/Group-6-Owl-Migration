@@ -1,0 +1,157 @@
+# Code to Extract Temprature data from Berkeley data set
+# Ran it all in chunks since it allows to run multipple lines of code in a row by just clicking the green run button at the top right of each chunk
+#This first chucnk is to load the neccesary libraries with install command if not yet installed
+```{r}
+#install.packages("ncdf4")
+#install.packages("ggplot2")
+#install.packages("dplyr")
+#install.packages("osfr")
+library(ncdf4)
+library(ggplot2)
+library(dplyr)
+library(osfr)
+```
+
+# This next chunk is used to acces the temprature data file remotely from The Open Science Framework (OSF)
+# You will first need your own acces token, go to https://osf.io/settings/tokens/ to sign up and get one, then run:
+# osf_auth("your_code")
+#Next run this chunk to load tempraure data
+```{r}
+#This first line is to access the specific OSF project
+project <- osf_retrieve_node("au49d")
+
+#Selecting the folder that contains the file with the "path =" command
+temperature_files <- osf_ls_files(project, path = "temperature")
+
+#Selecting the specific file (row) for download
+temperature_file <- temperature_files[1, ]
+
+#creating a temporary directory to download the file into
+temp_dir <- tempdir()
+
+#downloading the file into the temporary directory
+osf_download(temperature_file, path = temp_dir, conflicts = "overwrite")
+downloaded_file <- file.path(temp_dir, temperature_file$name)
+
+#Open and extracting the data from the .nc file (NETcdf, and closing it to save memory
+nc_file <- nc_open(downloaded_file)
+unlink(downloaded_file)
+```
+# This final chunk is now use to dowload the temprature data into a dataframe that is dowloaded onto a directory of your choice.
+# Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid).
+# Other variables that can be altered are mentioned in the chunk itself in eachsections annotation
+```{r}
+# Extract latitude, longitude, time, and temperature data
+lon <- ncvar_get(nc_file, "longitude")
+lat <- ncvar_get(nc_file, "latitude")
+time <- ncvar_get(nc_file, "time")
+temperature_data <- ncvar_get(nc_file, "temperature")
+climatology_data <- ncvar_get(nc_file, "climatology")
+
+# Replace NaN values with NA
+temperature_data[is.nan(temperature_data)] <- NA
+climatology_data[is.nan(climatology_data)] <- NA
+
+# Get indices for the desired latitude and longitude ranges
+# changed these for each Grid block
+lat_indices <- which(lat >= 50 & lat <= 55)
+lon_indices <- which(lon >= -80 & lon <= -50)
+
+# Subset the temperature and climatology data for these specific indices
+subset_temp <- temperature_data[lon_indices, lat_indices, ]
+subset_climatology <- climatology_data[lon_indices, lat_indices, ]
+
+# Verify that time is in years
+years <- time
+
+# Extract years 
+# this can be changed to any date from 1850 to present, 
+# the second value needs to be one year above desired last year
+years_indices <- which(years >= 2000 & years <= 2024)
+
+# These next few lines are to get the temperature anomalies and add them to a data frame
+# Subset temperature data for the specified years
+subset_temp_years <- subset_temp[,,years_indices]
+
+# Ensure correct number of years
+num_years <- length(years_indices)
+
+# Initialize an array to store monthly data
+monthly_data <- array(NA, dim = c(length(lon_indices), length(lat_indices), num_years, 12))
+
+# Fill the array with subset_temp data
+for (year in 1:num_years) {
+  for (month in 1:12) {
+    month_index <- (year - 1) * 12 + month
+    if (month_index <= dim(subset_temp_years)[3]) {
+      monthly_data[,,year,month] <- subset_temp_years[,,month_index]
+    }
+  }
+}
+
+# Calculate the mean temperature for each month over all years
+mean_monthly_temp <- apply(monthly_data, c(3, 4), mean, na.rm = TRUE)
+
+# Flatten the array and create a data frame
+# change the value for years to earliest desired year
+mean_monthly_temp_flattened <- as.vector(t(mean_monthly_temp))
+months <- rep(1:12, num_years)
+years <- rep(2000:(2000 + num_years - 1), each = 12)
+
+# Create a data frame with months and temperatures anomalies
+monthly_temp_df <- data.frame(Year = years, Month = months, Temperature = mean_monthly_temp_flattened)
+
+
+# This next set of code is extract the baseline temperatures and make it possible to calculate absolute temperature      
+# Calculate mean climatology temperature for each month
+climatology_monthly_data <- array(NA, dim = c(length(lon_indices), length(lat_indices), 12))
+for (month in 1:12) {
+  climatology_monthly_data[,,month] <- apply(subset_climatology[,,month], c(1, 2), mean, na.rm = TRUE)
+}
+
+# Flatten the array and create a data frame for each month
+mean_climatology_temp_flattened <- as.vector(climatology_monthly_data)
+months <- rep(1:12, each = length(lon_indices) * length(lat_indices))
+
+# Create a data frame with months and mean climatology temperatures
+climatology_temp_df <- data.frame(
+  Month = months,
+  ClimatologyTemperature = mean_climatology_temp_flattened
+)
+
+# Remove NaN values if necessary
+climatology_temp_df <- climatology_temp_df[!is.nan(climatology_temp_df$ClimatologyTemperature), ]
+
+# Calculate mean climatology temperature for each month
+climatology_monthly_means <- apply(subset_climatology, 3, mean, na.rm = TRUE)
+
+# Create a data frame for the monthly averages
+average_climatology_temp_df <- data.frame(
+  Month = 1:12,
+  AverageTemperature = climatology_monthly_means
+)
+
+# These next few lines merge the two data frames by month
+# Merge the monthly temperature data frame with the average climatology temperature data frame
+merged_df <- monthly_temp_df %>%
+  left_join(average_climatology_temp_df, by = "Month")
+
+# Sum the Temperature and AverageTemperature columns to get AbsoluteTemperature
+merged_df <- merged_df %>%
+  mutate(AbsoluteTemperature = Temperature + AverageTemperature)
+
+# Filter out any rows that are past the specified end year, this value will be your last year
+cleaned_df <- merged_df %>%
+  filter(Year <= 2023)
+
+# Select only the Year, Month, and AbsoluteTemperature columns
+export_df <- cleaned_df %>%
+  select(Year, Month, AbsoluteTemperature)
+
+# Saving the final dataframe as a csv for export
+# Chnage ID in the code to the grid ID 
+write.csv(export_df, file = "Temp_ID.csv", row.names = FALSE)
+```
+
+
+
