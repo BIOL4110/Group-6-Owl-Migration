@@ -58,6 +58,8 @@ with the amount of warming, and therefore to differ across longitudes, which exp
 
 ## Results
 
+[snowyowl]
+
 ---
 
 ## Discussion
@@ -87,6 +89,12 @@ with the amount of warming, and therefore to differ across longitudes, which exp
 ---
 
 ### Conclusion
+
+---
+
+##Figures
+
+snowyowl <- https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg
 
 ---
 
