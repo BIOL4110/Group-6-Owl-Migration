@@ -94,7 +94,7 @@ with the amount of warming, and therefore to differ across longitudes, which exp
 
 ##Figures
 
-snowyowl <- https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg
+snowyowl <- "https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg"
 
 ---
 
