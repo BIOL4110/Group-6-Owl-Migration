@@ -5,7 +5,7 @@ Please find the project proposal [here](https://github.com/BIOL4110/Group-6-Owl-
 
 ## Research Paper
 
-### The Effect of Temperature Change on Snowy Owls, *Bubo scandiacus*, Non-Breeding Range
+### The Effect of Temperature Change on [Snowy Owls](https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg), *Bubo scandiacus*, Non-Breeding Range
 
 **Group 6**: James Alexander, Christiane Newcombe, Willem Pretorius, Jude Slater  
 **Department of Integrative Biology**  
@@ -58,7 +58,6 @@ with the amount of warming, and therefore to differ across longitudes, which exp
 
 ## Results
 
-The majestic [snowy owl](https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg)
 
 ---
 
@@ -92,11 +91,7 @@ The majestic [snowy owl](https://www.allaboutbirds.org/guide/assets/photo/297366
 
 ---
 
-##Figures
-
-[snowyowl]: https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg
-
-
+## Figures
 
 ---
 
