@@ -58,7 +58,7 @@ with the amount of warming, and therefore to differ across longitudes, which exp
 
 ## Results
 
-The majestic ![snowy owl](https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg)
+The majestic [snowy owl](https://www.allaboutbirds.org/guide/assets/photo/297366501-480px.jpg)
 
 ---
 
