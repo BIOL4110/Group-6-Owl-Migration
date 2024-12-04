@@ -20,4 +20,4 @@ Each script is fully anotated on how it works and which variables need to be cha
 
 **If PAT in the code does not work please go to this [link](https://osf.io/settings/tokens/) to create your own**
 
-(https://media.tenor.com/NHpAk-sqCh8AAAAj/joke-jokes.gif)
+[!(https://media.tenor.com/NHpAk-sqCh8AAAAj/joke-jokes.gif)]
