@@ -18,6 +18,7 @@ library(osfr)
 #Next run this chunk to load tempraure data
 ```{r}
 #This first line is to access the specific OSF project
+osf_auth("FQ5MB6ryJmdnIPAbVl1WXC4G1gCYnmQ9QfsR4t5hVt80r7wsANTYoVWMThjvdSscfRagbI")
 project <- osf_retrieve_node("au49d")
 
 #Selecting the folder that contains the file with the "path =" command
@@ -37,9 +38,7 @@ downloaded_file <- file.path(temp_dir, temperature_file$name)
 nc_file <- nc_open(downloaded_file)
 unlink(downloaded_file)
 ```
-# This final chunk is now use to dowload the temprature data into a dataframe that is dowloaded onto a directory of your choice.
-# Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid).
-# Other variables that can be altered are mentioned in the chunk itself in eachsections annotation
+# This next chunk is now use to dowload all the data from the Berkeley file we will be using for analysis
 ```{r}
 # Extract latitude, longitude, time, and temperature data
 lon <- ncvar_get(nc_file, "longitude")
@@ -52,10 +51,20 @@ climatology_data <- ncvar_get(nc_file, "climatology")
 temperature_data[is.nan(temperature_data)] <- NA
 climatology_data[is.nan(climatology_data)] <- NA
 
+```
+
+
+# In this next chunk we will specify be extracting all the temperature data for the grid
+# Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid).
+# Another Variable that needs to be chnage is "ID" in the current_id line
+# One more variable that can be changed is every time year is used but we did not alter this between runs
+
+# This chunk needs to be rerun 12 times changing the latitude/longitude and ID everytime before the next chunk is to be ran
+```{r}
 # Get indices for the desired latitude and longitude ranges
 # changed these for each Grid block
-lat_indices <- which(lat >= 50 & lat <= 55)
-lon_indices <- which(lon >= -80 & lon <= -50)
+lat_indices <- which(lat >= 35 & lat <= 40)
+lon_indices <- which(lon >= -140 & lon <= -110)
 
 # Subset the temperature and climatology data for these specific indices
 subset_temp <- temperature_data[lon_indices, lat_indices, ]
@@ -137,21 +146,23 @@ merged_df <- monthly_temp_df %>%
   left_join(average_climatology_temp_df, by = "Month")
 
 # Sum the Temperature and AverageTemperature columns to get AbsoluteTemperature
-merged_df <- merged_df %>%
-  mutate(AbsoluteTemperature = Temperature + AverageTemperature)
+# Change 'ID' to the ID of the grid section that is being done
+current_id <- "ID"
+current_df <- merged_df %>%
+  mutate(!!current_id := Temperature + AverageTemperature)%>% # Calculating absolute temperature 
+  select(-Temperature, -AverageTemperature)%>% # Cleaning up
+  filter(Year <= 2023) # Filtering for last year
 
-# Filter out any rows that are past the specified end year, this value will be your last year
-cleaned_df <- merged_df %>%
-  filter(Year <= 2023)
-
-# Select only the Year, Month, and AbsoluteTemperature columns
-export_df <- cleaned_df %>%
-  select(Year, Month, AbsoluteTemperature)
-
-# Saving the final dataframe as a csv for export
-# Chnage ID in the code to the grid ID 
-write.csv(export_df, file = "Temp_ID.csv", row.names = FALSE)
+# Aligning by the Year, Month columns and adding the new ID to the dataframe each run
+if (!exists("export_df")) {
+  export_df <- current_df
+} else {
+  export_df <- full_join(export_df, current_df, by = c("Year", "Month"))
+}
 ```
 
+
+# Saving the final dataframe as a csv for export
+write.csv(export_df, file = "Temperature.csv", row.names = FALSE)
 
 
