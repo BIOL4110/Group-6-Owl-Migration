@@ -10,8 +10,11 @@ We used three separate R files in order to run our full analysis.
 They have been number in order of how to run them,
 
 1, Temperature_code (notebook)
+
 2, Preping_the_data (script)
+
 3, Model_making (script)
+
 
 Each script is fully anotated on how it works and which variables need to be changed.
 
