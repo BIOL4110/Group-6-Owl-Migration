@@ -25,7 +25,7 @@ Each script is fully anotated on how it works and which variables need to be cha
 
 **If PAT in the code does not work please go to this [link](https://osf.io/settings/tokens/) to create your own**
 
-#### OSF
+### OSF
 
 - Our OSF [repository](https://osf.io/au49d/?view_only=fed702b9eb8749db846444273943dbec).
 
