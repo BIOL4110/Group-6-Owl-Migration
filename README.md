@@ -10,8 +10,8 @@
 
 ## Data Analysis Replication
 
-We used three separate R files to run our full analysis./n
-This is all we used along with our data files stored on the OSF to test our hypothesis./n 
+We used three separate R files to run our full analysis.<br>
+This is all we used along with our data files stored on the OSF to test our hypothesis.<br>
 They have been number in order of how to run them,
 
 1, Temperature_code (notebook)
@@ -28,6 +28,8 @@ Each script is fully anotated on how it works and which variables need to be cha
 #### OSF
 
 - Our OSF [repository](https://osf.io/au49d/?view_only=fed702b9eb8749db846444273943dbec).
+
+--- 
 
 ![](https://i.natgeofe.com/k/90bac473-ad17-4d15-a2c5-450dad846d4f/snowy-owl-yawn_3x2.jpg)
 
