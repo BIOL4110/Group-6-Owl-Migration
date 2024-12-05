@@ -13,7 +13,7 @@ library(osfr)
 ```
 
 # This next chunk is used to acces the temprature data file remotely from The Open Science Framework (OSF)
-# You will first need your own acces token, go to https://osf.io/settings/tokens/ to sign up and get one, then run:
+# You might need your own acces token, go to https://osf.io/settings/tokens/ to sign up and get one, then run:
 # osf_auth("your_code")
 #Next run this chunk to load tempraure data
 ```{r}
@@ -38,7 +38,8 @@ downloaded_file <- file.path(temp_dir, temperature_file$name)
 nc_file <- nc_open(downloaded_file)
 unlink(downloaded_file)
 ```
-# This next chunk is now use to dowload all the data from the Berkeley file we will be using for analysis
+
+# This next chunk is now used to dowload all the data from the Berkeley file we will be using for analysis
 ```{r}
 # Extract latitude, longitude, time, and temperature data
 lon <- ncvar_get(nc_file, "longitude")
@@ -54,12 +55,12 @@ climatology_data[is.nan(climatology_data)] <- NA
 ```
 
 
-# In this next chunk we will specify be extracting all the temperature data for the grid
+# In this next chunk we will be extracting all the temperature data for the grid
 # Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid).
 # Another Variable that needs to be chnage is "ID" in the current_id line
 # One more variable that can be changed is every time year is used but we did not alter this between runs
 
-# This chunk needs to be rerun 12 times changing the latitude/longitude and ID everytime before the next chunk is to be ran
+# This chunk needs to be rerun 12 times, changing the latitude/longitude and ID everytime before the chunk is ran
 ```{r}
 # Get indices for the desired latitude and longitude ranges
 # changed these for each Grid block

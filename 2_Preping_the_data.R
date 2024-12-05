@@ -15,7 +15,7 @@ ebird_files <- osf_ls_files(project, path = "ebird", n_max = 25)
 # Create a temporary directory for downloading files
 temp_dir <- tempdir()
 
-# Filter the file list to include only those of interest (e.g., .csv files for checklists)
+# Filter the file list to include only those of interest 
 snowy_owl_file <- ebird_files[ebird_files$name == "filtered_Snowy_Owl.csv", ]
 checklist_files <- ebird_files[grepl("_checklists\\.csv$", ebird_files$name), ]
 
@@ -25,7 +25,7 @@ filtered_Snowy_Owl <- read_csv(snowy_owl_path)
 
 downloaded_files <- osf_download(checklist_files, path = temp_dir, conflicts = "overwrite")
 
-# Read all downloaded CSV files into a list of data frames
+# Read all downloaded checklist files into a list of data frames
 checklists <- lapply(downloaded_files$local_path, read_csv)
 
 # Combine all checklists into a single data frame
