@@ -499,6 +499,8 @@ temp_data <- Temprature_data %>%
 
 #### combining the temprature data with ebird data
 
+##
+
 final_df_NW <- left_join(temp_data, df_NW_no_outliers, by = "obs_year")
 
 final_df_UCW <- left_join(temp_data, df_UCW, by = "obs_year")
@@ -507,6 +509,8 @@ final_df_LCW <- left_join(temp_data, df_LCW_no_outliers, by = "obs_year")
 
 final_df_SW <- left_join(temp_data, df_SW, by = "obs_year")
 
+##
+
 final_df_NC <- left_join(temp_data, df_NC_no_outliers, by = "obs_year")
 
 final_df_UCC <- left_join(temp_data, df_UCC_no_outliers, by = "obs_year")
@@ -514,6 +518,8 @@ final_df_UCC <- left_join(temp_data, df_UCC_no_outliers, by = "obs_year")
 final_df_LCC <- left_join(temp_data, df_LCC_no_outliers, by = "obs_year")
 
 final_df_SC <- left_join(temp_data, df_SC_no_outliers, by = "obs_year")
+
+##
 
 final_df_NE <- left_join(temp_data, df_NE, by = "obs_year")
 
