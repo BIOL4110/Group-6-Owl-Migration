@@ -32,6 +32,8 @@ checklists <- lapply(downloaded_files$local_path, read_csv)
 filtered_all_checklists <- do.call(rbind, checklists)
 unlink(downloaded_files)
 
+# As with the temperature data this needs to be ran according to the bands (NW, UCW, LCW, SW) (NC, UCC, LCC, SC) (NE, UCE, LCE, SE), so minimum 4 data frames have to be created
+
 ##################### NW #####################
 #### break the checklist data up into areas, filtering for the correct dates, and amalgamte by year.
 Checklists_NW <- filtered_all_checklists %>% 
@@ -187,6 +189,8 @@ write.csv(df_SW, "df_SW.csv", row.names = FALSE)
 
 
 
+
+
 ##################### NC #####################
 #### break the checklist data up into area
 Checklists_NC <- filtered_all_checklists %>% 
@@ -336,6 +340,7 @@ write.csv(df_SC, "/df_SC.csv", row.names = FALSE)
 
 
 
+
 ##################### NE #####################
 #### break the checklist data up into area
 Checklists_NE <- filtered_all_checklists %>% 
@@ -478,6 +483,7 @@ df_SE_no_outliers <- subset(df_SE, stadradized_count <= 0.048)
 
 ##### exporting df
 write.csv(df_SE, "/df_SE.csv", row.names = FALSE)
+
 
 
 
