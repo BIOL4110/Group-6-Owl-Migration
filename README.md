@@ -1,4 +1,4 @@
-# Group 6: Snowy Owl migartion patterns 
+# Group 6: Snowy Owl Migration Patterns 
 
 ---
 
