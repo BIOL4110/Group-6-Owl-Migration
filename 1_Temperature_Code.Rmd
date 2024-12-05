@@ -62,6 +62,8 @@ climatology_data[is.nan(climatology_data)] <- NA
 
 # This chunk needs to be rerun 12 times, changing the latitude/longitude and ID everytime before the chunk is ran
 
+# after running 12 times run last line of code outside of chunk to save it as a .csv
+
 ### IMPORTANT ###
 
 # For model analysis this chunk needs to be Ran minimum 4 times changing the lat and lon_indices and ID to correspond with one of the longitude bands: 
