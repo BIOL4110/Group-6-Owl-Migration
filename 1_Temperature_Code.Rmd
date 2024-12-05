@@ -56,14 +56,21 @@ climatology_data[is.nan(climatology_data)] <- NA
 
 
 # In this next chunk we will be extracting all the temperature data for the grid
-# Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid).
-# Another Variable that needs to be chnage is "ID" in the current_id line
+# Variables that needed to be altred are lat_indices and lon_indices (this was to specify specific coordinates of the grid)(Marked with "###")
+# Another Variable that needs to be chnage is "ID" in the current_id line (Marked with "###")
 # One more variable that can be changed is every time year is used but we did not alter this between runs
 
 # This chunk needs to be rerun 12 times, changing the latitude/longitude and ID everytime before the chunk is ran
+
+### IMPORTANT ###
+
+# For model analysis this chunk needs to be Ran minimum 4 times changing the lat and lon_indices and ID to correspond with one of the longitude bands: 
+#(NW, UCW, LCW, SW) (NC, UCC, LCC, SC) (NE, UCE, LCE, SE)
+
 ```{r}
 # Get indices for the desired latitude and longitude ranges
-# changed these for each Grid block
+
+### changed these for each Grid block
 lat_indices <- which(lat >= 35 & lat <= 40)
 lon_indices <- which(lon >= -140 & lon <= -110)
 
@@ -147,7 +154,8 @@ merged_df <- monthly_temp_df %>%
   left_join(average_climatology_temp_df, by = "Month")
 
 # Sum the Temperature and AverageTemperature columns to get AbsoluteTemperature
-# Change 'ID' to the ID of the grid section that is being done
+
+### Change 'ID' to the ID of the grid section that is being done
 current_id <- "ID"
 current_df <- merged_df %>%
   mutate(!!current_id := Temperature + AverageTemperature)%>% # Calculating absolute temperature 
