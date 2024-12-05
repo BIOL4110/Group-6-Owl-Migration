@@ -20,5 +20,5 @@ Each script is fully anotated on how it works and which variables need to be cha
 
 **If PAT in the code does not work please go to this [link](https://osf.io/settings/tokens/) to create your own**
 
-![](https://media.tenor.com/NHpAk-sqCh8AAAAj/joke-jokes.gif)
+![](https://i.natgeofe.com/k/90bac473-ad17-4d15-a2c5-450dad846d4f/snowy-owl-yawn_3x2.jpg)
 

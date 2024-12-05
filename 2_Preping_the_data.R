@@ -488,7 +488,7 @@ Temprature_data <- read_csv("Temperature.csv")
 
 temp_data <- Temprature_data %>% 
   group_by(Year) %>%  
-  summarise(NW = mean(NW),UCW= mean(UCW),LCW = mean(LCW),SW = mean(SW)) %>% 
+  summarise(NW = mean(NW),UCW= mean(UCW),LCW = mean(LCW),SW = mean(SW),NC = mean(NC),UCC = mean(UCC),LCC = mean(LCC),SC = mean(SC),NE = mean(NE),UCE = mean(UCE),LCE = mean(LCE),SE = mean(SE)) %>% 
   rename(obs_year = Year)
 
 #### combining the temprature data with ebird data
